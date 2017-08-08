@@ -6,9 +6,9 @@ index cee576c37901..3cd8c5817d2d 100644
                 "frame_tree_node", frame_tree_node_->frame_tree_node_id(), "url",
                 params->target_url.possibly_invalid_spec());
  
-+  scoped_refptr<ResourceRequestBodyImpl> body;
++  scoped_refptr<ResourceRequestBody> body;
 +  if (params->body->has_object) {
-+    body = new ResourceRequestBodyImpl;
++    body = new ResourceRequestBody;
 +    std::vector<storage::DataElement> elements;
 +    for (const auto& iter : params->body->elements) {
 +      storage::DataElement element;
@@ -121,7 +121,7 @@ index 5c2ab72ff537..3e7c25009c6a 100644
      WindowOpenDisposition disposition,
      const blink::mojom::WindowFeatures& features,
 +    const std::vector<std::string>& additional_features,
-+    const scoped_refptr<ResourceRequestBodyImpl>& body,
++    const scoped_refptr<ResourceRequestBody>& body,
      bool user_gesture,
      bool opener_suppressed,
      bool* no_javascript_access) {
@@ -133,7 +133,7 @@ index a3d217fd9446..1a6354a291b7 100644
  class RenderProcessHost;
  class RenderViewHost;
  class ResourceContext;
-+class ResourceRequestBodyImpl;
++class ResourceRequestBody;
  class SiteInstance;
  class SpeechRecognitionManagerDelegate;
  class StoragePartition;
@@ -157,7 +157,7 @@ index a3d217fd9446..1a6354a291b7 100644
        WindowOpenDisposition disposition,
        const blink::mojom::WindowFeatures& features,
 +      const std::vector<std::string>& additional_features,
-+      const scoped_refptr<ResourceRequestBodyImpl>& body,
++      const scoped_refptr<ResourceRequestBody>& body,
        bool user_gesture,
        bool opener_suppressed,
        bool* no_javascript_access);
@@ -173,15 +173,10 @@ index d9a7e20f21cc..961cb76b162f 100644
  #include "content/common/content_constants_internal.h"
  #include "content/common/content_switches_internal.h"
  #include "content/common/dom_storage/dom_storage_types.h"
-@@ -1439,6 +1440,64 @@ WebView* RenderViewImpl::CreateView(WebLocalFrame* creator,
+@@ -1439,6 +1440,59 @@ WebView* RenderViewImpl::CreateView(WebLocalFrame* creator,
    }
    params->features = ConvertWebWindowFeaturesToMojoWindowFeatures(features);
  
-+  for (size_t i = 0; i < features.additional_features.size(); ++i) {
-+    params->additional_features.push_back(
-+        features.additional_features[i].Utf8());
-+  }
-+
 +  params->body = mojom::ResourceRequestBody::New();
 +  auto body = GetRequestBodyForWebURLRequest(request);
 +  if (body) {
