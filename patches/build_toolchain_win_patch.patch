@@ -2,7 +2,17 @@ diff --git a/build/toolchain/win/BUILD.gn b/build/toolchain/win/BUILD.gn
 index dd1017f..d15706b 100644
 --- a/build/toolchain/win/BUILD.gn
 +++ b/build/toolchain/win/BUILD.gn
-@@ -145,12 +145,19 @@ template("msvc_toolchain") {
+@@ -135,22 +135,22 @@ template("msvc_toolchain") {
+       sys_include_flags = ""
+     }
+ 
+-    clflags = ""
+-
+-    # Pass /FC flag to the compiler if needed.
+-    if (msvc_use_absolute_paths) {
+-      clflags += "/FC "
+-    }
+-
      tool("cc") {
        rspfile = "{{output}}.rsp"
        precompiled_header_type = "msvc"
